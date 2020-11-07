@@ -21,8 +21,7 @@ exports.setupIO = (io) => {
 
             if (!videoId) {
                 console.log("IF FIRED")
-                let testusername = "jimmy"
-                Rooms.addUser(roomID, testusername, socket.id);
+                Rooms.addUser(roomID, username, socket.id);
 
                 const room = Rooms.getRoom(roomID)
                 console.log("this is the room yo", room)
