@@ -1,0 +1,23 @@
+.members-container {
+  display: flex;
+  width: 70%;
+  background-color: rgb(224, 223, 223);
+  .user {
+    display: flex;
+    flex-wrap: wrap;
+    width: 33%;
+    height: 125px;
+    border: 1px solid rgba(0, 0, 0, 0.39);
+    background-color: rgb(92, 91, 91);
+    margin-right: 5px;
+    span {
+      position: absolute;
+      color: white;
+      margin-left: 2px;
+    }
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
