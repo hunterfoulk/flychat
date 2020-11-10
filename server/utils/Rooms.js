@@ -1,7 +1,7 @@
 class Rooms {
 
     constructor() {
-        this.rooms = {}; // { users: [...{name, id, roomId}], videoURL: ''}
+        this.rooms = {}; // { users: [...{name, id}], videoURL: ''}
         this.userMap = {}; // maps socket id to rooms
     }
 
@@ -10,10 +10,12 @@ class Rooms {
 
     }
 
-    addUser(roomID, username, userId) {
-        this.rooms[roomID].users.push({ username, userId });
-        // console.log(this.rooms[roomID].users)
-        console.log("ROOMS", this.rooms)
+    addUser({ roomID, User }) {
+
+        console.log("room ID", roomID)
+        this.rooms[roomID].users.push(User);
+        console.log("roooooom", this.rooms[roomID].users)
+        // console.log("ROOMS", this.rooms[roomID].users)
 
     }
 
@@ -26,8 +28,9 @@ class Rooms {
     }
 
 
-    getUserList(roomId) {
-        const room = this.rooms[roomId]
+    getUserList(roomID) {
+        console.log("room id for get", roomID)
+        const room = this.rooms[roomID]
 
         if (room) {
             return room.users
@@ -39,10 +42,32 @@ class Rooms {
 
     }
 
-    getUser(userId) {
+    removeUser(User) {
+        console.log("the user", User)
+        let roomID = User.roomId
+        console.log("filtered room id", roomID)
+        let room = this.rooms[roomID];
 
-        const users = this.getUserList(userId)
-        return users.find((user) => user.id === userId)
+        // let filtered = room.users.filter(user => user.userId !== User.userId)
+        // console.log("filtered",filtered)
+        return (
+            room.users.filter(user => user.userId !== User.userId)
+            // console.log("filtered", filtered)
+
+
+        )
+
+
+    }
+
+    removeUser(roomID, userId) {
+        console.log("FIREDDD")
+
+        const room = this.rooms[roomID]
+
+        if (room) {
+            return room.users.filter(user => user.userId !== userId)
+        }
 
     }
 

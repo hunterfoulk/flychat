@@ -13,7 +13,7 @@ export const userReducer = (state, action) => {
         case 'UPDATE_USER_LIST':
             return {
                 ...state,
-                userList: action.users,
+                userList: action.userList,
             };
         case 'UPDATE_MESSAGES':
             const { username, userId, message, time } = action.data;

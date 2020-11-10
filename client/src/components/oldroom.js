@@ -9,19 +9,17 @@ import Swal from 'sweetalert2'
 import Chat from "./chat"
 import Members from "./members"
 import Peer from "simple-peer";
-import styled from "styled-components";
 import io from 'socket.io-client';
 
 
 
-
-const Video = (props) => {
+const Video = ({ peer }) => {
     const ref = useRef();
-    console.log("PROPS PEER FOR VIEEO", props.peer)
+    console.log("PEER IN VIDEO", peer)
+    console.log("PEER IN VIDEO 123", peer.on)
     useEffect(() => {
         console.log("video fired")
-        console.log("props.peer", props.peer)
-        props.peer.on("stream", stream => {
+        peer.on("stream", stream => {
             console.log("STREAMMM", stream)
             ref.current.srcObject = stream;
         })
@@ -65,11 +63,12 @@ export default function Room() {
         height: '500px',
     };
 
-
     useEffect(() => {
         const roomID = match.params.roomID;
         const videoId = location.state && location.state.videoId
         let username = location.state && location.state.hostName
+
+
         init(roomID, videoId, username)
 
         return () => {
@@ -79,7 +78,6 @@ export default function Room() {
 
 
     const init = async (roomID, videoId, username) => {
-
 
         socketRef.current = io("http://localhost:8000", { path: '/socket' });
 
@@ -97,16 +95,20 @@ export default function Room() {
 
                 navigator.mediaDevices.getUserMedia({ video: videoConstraints, audio: true }).then(stream => {
                     userVideo.current.srcObject = stream;
-                    console.log("THIS IS THE STREAM", stream)
-                    socketRef.current.emit("join room", { roomID, username, videoId, stream });
+
+
+                    const peer = createPeer(stream);
+                    // socketRef.current.emit("join room", { roomID, username, videoId, peer });
+
+
                     socketRef.current.on("all users", users => {
                         console.log("USERS", users)
                         const peers = [];
-                        users.forEach(user => {
-                            console.log("USER ID", user)
-                            const peer = createPeer(user, socketRef.current.id, stream, username);
+                        users.forEach(userID => {
+                            console.log("USER ID", userID)
+                            const peer = createPeer(userID, socketRef.current.id, stream);
                             peersRef.current.push({
-                                peerID: user.userId,
+                                peerID: userID,
                                 peer,
                             })
                             peers.push(peer);
@@ -116,7 +118,7 @@ export default function Room() {
 
                     socketRef.current.on("user joined", payload => {
                         console.log("user joined fired")
-                        console.log("PAYLAOD FOR JOIN", payload)
+                        console.log("PAYLOAD FOR JOIN", payload)
                         const peer = addPeer(payload.signal, payload.callerID, stream);
                         peersRef.current.push({
                             peerID: payload.callerID,
@@ -127,37 +129,50 @@ export default function Room() {
 
                     socketRef.current.on("receiving returned signal", payload => {
                         console.log("front-end recieving", payload.id)
-                        const item = peersRef.current.find(p => p.peerID === payload.id);
+                        const item = peersRef.current.find(p => p.peerID.userId === payload.id);
                         console.log("peer current", peersRef.current)
                         console.log("item", item)
                         item.peer.signal(payload.signal);
+                        console.log("ITEM PEER", item.peer)
                     });
                 })
-
-
 
 
             }
         } else {
             userDispatch({ type: 'UPDATE_VIDEO_ID', videoId: videoId });
-            navigator.mediaDevices.getUserMedia({ video: videoConstraints, audio: true }).then(stream => {
+            navigator.mediaDevices.getUserMedia({ video: videoConstraints, audio: true }).then(async stream => {
                 userVideo.current.srcObject = stream;
 
-                console.log("THIS IS THE STREAM", stream)
+                await createPeer(roomID, username, socketRef.current.id, stream, videoId);
 
-                socketRef.current.emit("join room", { roomID, username, videoId, stream: stream });
+
+
+                // socketRef.current.emit("join room", { roomID, username, videoId, stream });
+
+                // socketRef.current.emit("join room", { roomID, username, videoId });
+
                 socketRef.current.on("all users", users => {
+                    console.log("USERS ELSE", users)
+
                     const peers = [];
                     users.forEach(user => {
-                        const peer = createPeer(user, socketRef.current.id, stream);
+                        console.log("users", user)
+
                         peersRef.current.push({
                             peerID: user.userId,
-                            peer,
+                            peer: user.peer,
                         })
-                        peers.push(peer);
+                        peers.push(user.peer);
+                        const item = peersRef.current.find(p => p.peerID === user.userId);
+                        console.log("item", item)
+                        // item.peer.signal(user.signal);
+                        console.log("PEERS REF", peersRef.current)
+                        setPeers(users => [...users, user.peer]);
                     })
-                    setPeers(peers);
                 })
+
+
 
                 socketRef.current.on("user joined", payload => {
                     console.log("user joined fired")
@@ -202,38 +217,24 @@ export default function Room() {
                 case 'all users':
                     console.log("FIREDDDDD")
 
-                    userDispatch({ type: 'UPDATE_USER_LIST', data });
+                    userDispatch({ type: 'UPDATE_USER_LIST', userList: data.users });
                     break;
+
                 default:
                     break;
             }
         });
 
-        socketRef.current.on("removeUser", userToRemove => {
-            console.log("disconnect list fired", userToRemove)
-            // userDispatch({ type: 'UPDATE_USER_LIST', userList: newUsers });
-            let user = peersRef.current.find(peer => peer.peerID === userToRemove.userId)
-            let removePeer = user.peer
-            // console.log("USER PEER", removePeer)
-            console.log("FIRST PEERSE", peersRef.current)
-            let newPeers = peersRef.current.filter(user => user.peer._id !== removePeer._id)
-
-            console.log("newPeers", newPeers)
-            console.log("newPeers with peer", newPeers.peer)
-            peersRef.current = newPeers
-            setPeers(newPeers)
-        });
-
     }
 
 
-
-    console.log("current socket", socketRef.current)
     console.log("peers ref current", peersRef.current)
     console.log("THIS IS THE PEERS", peers)
 
-    const createPeer = (usersToSignal, callerID, stream) => {
-        console.log("CREATE FIRED")
+    //create peer
+    const createPeer = (roomID, username, socketId, stream, videoId) => {
+        console.log("CREATE FIRED", stream);
+
         const peer = new Peer({
             initiator: true,
             trickle: false,
@@ -241,16 +242,18 @@ export default function Room() {
         });
 
         peer.on("signal", signal => {
-            console.log("sending signal")
-            socketRef.current.emit("sending signal", { usersToSignal, callerID, signal })
+            console.log("sending signal", stream)
+            socketRef.current.emit("join room", { roomID, username, socketId, signal, peer, videoId })
+
         })
-        // console.log("NEW PEER SIGNAL", signal)
-        console.log("NEW PEER LOG", peer)
-        return peer;
+        // console.log("PEER", peer)
+        // return peer;
     }
 
+    //add peer
     const addPeer = (incomingSignal, callerID, stream) => {
-        console.log("ADD PEER FIRED", incomingSignal)
+        console.log("incoming signal", incomingSignal)
+        console.log("ADD PEER FIRED")
         const peer = new Peer({
             initiator: false,
             trickle: false,
@@ -258,7 +261,7 @@ export default function Room() {
         })
 
         peer.on("signal", signal => {
-            socketRef.current.emit("returning signal", { signal, callerID })
+            socketRef.current.emit("returning signal", { signal, callerID, stream })
         })
 
         peer.signal(incomingSignal);
@@ -266,7 +269,7 @@ export default function Room() {
         return peer;
     }
 
-    console.log("PEERS", peers)
+
 
 
     return (
@@ -289,6 +292,7 @@ export default function Room() {
                 </div>
 
                 {peers.map((peer, index) => {
+                    console.log("PEER IN MAP", peer)
                     return (
                         <>
                             <Video key={index} peer={peer} />

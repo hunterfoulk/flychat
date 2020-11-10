@@ -7,21 +7,37 @@ const generateServerMessage = (type, payload = {}) => {
     };
 };
 
+class UserClass {
 
+    constructor(userId, username, roomID, peer) {
+        this.userId = userId
+        this.username = username
+        this.roomID = roomID
+        this.peer = peer
+    }
+
+}
 
 
 exports.setupIO = (io) => {
+
+
     io.on('connection', socket => {
+        let User;
+
+
         console.log("SOCKET", socket.id)
         socket.on("join room", (data) => {
-            const { roomID, username, videoId } = data;
+            const { roomID, username, videoId, stream } = data;
+            console.log("STREAM FOR PERSON", stream)
             console.log("ROOM ID", roomID)
             console.log("username", username)
+            User = new UserClass(socket.id, username, roomID)
 
 
             if (!videoId) {
                 console.log("IF FIRED")
-                Rooms.addUser(roomID, username, socket.id);
+                Rooms.addUser({ roomID, User });
 
                 const room = Rooms.getRoom(roomID)
                 console.log("this is the room yo", room)
@@ -35,11 +51,10 @@ exports.setupIO = (io) => {
 
                 console.log("ELSE FIRED")
                 Rooms.addRoom(roomID, videoId);
-                Rooms.addUser(roomID, username, socket.id);
+                Rooms.addUser({ roomID, User });
                 Rooms.setVideoId(roomID, videoId);
 
             }
-
 
             let users = Rooms.getUserList(roomID)
             let filteredUsers = users.filter(user => user.userId !== socket.id)
@@ -49,10 +64,18 @@ exports.setupIO = (io) => {
             socket.emit("all users", filteredUsers);
         });
 
-        socket.on("sending signal", payload => {
-            console.log("sending signal", payload.userToSignal.username)
+        // socket.on("attach peer", payload => {
+        //     console.log("payload", payload.callerID)
+        //     let userId = payload.callerID
+        //     User[userId].peer = payload.peer
+        //     console.log("USER", User)
 
-            io.to(payload.userToSignal.userId).emit('user joined', { signal: payload.signal, callerID: payload.callerID, username: payload.userToSignal.username });
+        // })
+
+        socket.on("sending signal", payload => {
+            console.log("sending signal", payload.usersToSignal.username)
+
+            io.to(payload.usersToSignal.userId).emit('user joined', { signal: payload.signal, callerID: payload.callerID });
         });
 
         socket.on("returning signal", payload => {
@@ -60,11 +83,23 @@ exports.setupIO = (io) => {
             socket.to(payload.callerID).emit('receiving returned signal', { signal: payload.signal, id: socket.id });
         });
 
+
         socket.on('disconnect', () => {
+            console.log("disconnect fired")
+
+            let users = Rooms.getUserList(User.roomID)
+            let newUsers = users.filter(user => user.userId !== User.userId)
+            let userToRemove = users.find(user => user.userId === User.userId)
+
+            // console.log("NEW USERS", newUsers)
+            newUsers.forEach((user) => {
+                console.log("FOR EACH USER", user)
+                io.to(user.userId).emit('removeUser', userToRemove)
+
+
+            })
 
         });
 
     });
 }
-
-
