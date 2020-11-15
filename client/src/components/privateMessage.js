@@ -11,7 +11,7 @@ export default function PrivateMessage({ tab, socket }) {
 
     return (
         <>
-            <span>{tab.foreignSocket.username}</span>
+
             {tab.messages.map((message) => (
                 <>
                     <div className="message">

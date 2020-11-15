@@ -40,7 +40,9 @@ export default function Chat({ socket }) {
 
         })
 
-
+        socket.on("notTyping", (username) => {
+            setTypers((typers) => typers.filter((typer) => typer !== username));
+        });
 
     }, [])
 
@@ -81,7 +83,7 @@ export default function Chat({ socket }) {
             socket.emit("notTyping", {
                 username: userData.username,
             });
-        } else {
+        } else if (e.target.value && tab === "ROOM") {
             console.log("else fired typing")
             socket.emit("typing", {
                 username: userData.username,
@@ -115,21 +117,33 @@ export default function Chat({ socket }) {
     console.log("NEW WINDOW", windows)
 
     const tabStyles = {
-        boxShadow: "2px 0px 17px -5px rgba(0, 0, 0, 0.6)",
-        fontWeight: "500"
+        fontWeight: "500",
+        backgroundColor: "white",
+        borderRight: "1px solid #18182486",
+        borderLeft: "1px solid #18182486",
+        borderTop: "1px solid #18182486",
+        borderTopLeftRadius: "3px",
+        borderTopRightRadius: "3px",
     }
 
+    console.log("tab", tab)
     console.log(privateMessage)
     return (
         <div className="chat">
             <div className="tabs">
-                <div className="general-tab" onClick={() => setTab("ROOM")} style={tab === "ROOM" ? tabStyles : { boxShadow: "none" }}>
+                <div className="general-tab" onClick={() => setTab("ROOM")} style={tab === "ROOM" ? tabStyles : {
+                    backgroundColor: "#f3f3f3", border: "none", borderTopLeftRadius: "3px",
+                    borderTopRightRadius: "3px",
+                }}>
                     <span>Room</span>
                 </div>
                 <div className="private-tabs">
-                    {tabs.map((tab, i) => (
-                        <div className="private-tab" onClick={() => setTab(tab)} style={tab === tab ? tabStyles : { boxShadow: "none" }}>
-                            <span>{tab.foreignSocket.username}</span>
+                    {tabs.map((tabs, i) => (
+                        <div className="private-tab" onClick={() => setTab(tabs)} style={tabs.tabId === tab.tabId ? tabStyles : {
+                            backgroundColor: "#f3f3f3", border: "none", borderTopLeftRadius: "3px",
+                            borderTopRightRadius: "3px",
+                        }}>
+                            <span>{tabs.foreignSocket.username}</span>
                         </div>
                     ))}
                 </div>

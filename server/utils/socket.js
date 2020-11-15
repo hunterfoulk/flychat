@@ -118,6 +118,17 @@ exports.setupIO = (io) => {
 
         })
 
+        socket.on("notTyping", (payload) => {
+            let username = payload.username
+            let users = Rooms.getUserList(User.roomID)
+            console.log(username, "stopped typing");
+            users.forEach((user) => {
+                io.to(user.userId).emit("notTyping", username);
+            })
+        })
+
+
+
         socket.on("createNewTab", (payload) => {
             const tabId = short.generate()
             console.log("payload", payload)
