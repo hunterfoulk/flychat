@@ -1,3 +1,5 @@
+// const { uniqBy, remove, isEmpty, uniq } = require('lodash')
+
 class Rooms {
 
     constructor() {
@@ -43,35 +45,66 @@ class Rooms {
     }
 
     removeUser(User) {
-        console.log("the user", User)
-        let roomID = User.roomId
-        console.log("filtered room id", roomID)
-        let room = this.rooms[roomID];
-
-        // let filtered = room.users.filter(user => user.userId !== User.userId)
-        // console.log("filtered",filtered)
-        return (
-            room.users.filter(user => user.userId !== User.userId)
-            // console.log("filtered", filtered)
-
-
-        )
+        // console.log("REMOVE FIREDDD", User)
+        let roomID = User.roomID
+        // console.log("filtered room id", roomID)
+        let userFiltered = this.rooms[roomID].users.filter(user => user.userId !== User.userId);
+        this.rooms[roomID].users = userFiltered
+        console.log("FILTERED USERS IN CLASS", userFiltered)
 
 
     }
 
-    removeUser(roomID, userId) {
-        console.log("FIREDDD")
+    // removeUser(roomID) {
+    //     console.log("FIREDDD")
 
-        const room = this.rooms[roomID]
+    //     const room = this.rooms[roomID]
 
-        if (room) {
-            return room.users.filter(user => user.userId !== userId)
-        }
+    //     if (room) {
+    //         return room.users.filter(user => user.userId !== userId)
+    //     }
 
-    }
+    // }
 
 
 }
 
-module.exports = new Rooms(); 
+class TabsClass {
+    constructor() {
+        this.tabs = []
+    }
+    addTab({ tabId, local, foreign }) {
+        this.tabs.push(new TabClass(tabId, local, foreign))
+    }
+    getAllTabs(user) {
+        return this.tabs
+    }
+    getTab(tabId) {
+        return this.tabs.find(t => t.tabId === tabId)
+    }
+    getUsersTabs(user) {
+        const usersTabs = this.tabs.filter(t => t.localSocket.userId !== user.userId)
+        return usersTabs
+    }
+}
+
+class TabClass {
+    constructor(tabId, local, foreign) {
+        this.tabId = tabId
+        this.localSocket = local
+        this.foreignSocket = foreign
+        this.messages = []
+    }
+
+    setMessages(message) {
+        console.log("message sent", message)
+        this.messages.push(message)
+    }
+
+}
+
+module.exports = {
+    Rooms: new Rooms(),
+    Tabs: new TabsClass(),
+    TabClass
+}

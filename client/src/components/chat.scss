@@ -2,16 +2,157 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  height: 300px;
-  width: 880px;
-  background-color: white;
+  height: 330px;
+  max-height: 330px;
+  width: 95%;
+  background-color: red;
+  background-color: rgb(250, 250, 250);
   -webkit-box-shadow: 1px 1px 8px 1px rgba(156, 151, 151, 0.4);
   box-shadow: 1px 1px 8px 1px rgba(156, 151, 151, 0.4);
   border-radius: 5px;
+  .tabs {
+    display: flex;
+    height: 30px;
+    // background-color: red;
+    // padding-bottom: 3px;
+    .general-tab {
+      display: flex;
+      justify-content: center;
+      // background-color: grey;
+      // padding: 3px;
+      width: 8%;
+      color: #e7104b;
+      box-shadow: 2px 0px 17px -4px rgba(0, 0, 0, 0.6);
+      cursor: pointer;
+    }
+    .private-tabs {
+      display: flex;
+      width: 92%;
+      // background-color: green;
+      .private-tab {
+        display: flex;
+        justify-content: center;
+        width: 10%;
+        color: #e7104b;
+        cursor: pointer;
+      }
+    }
+  }
+  .users-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgb(236, 233, 233);
+    width: 15%;
+    height: 100%;
+    border-left: 1px solid #181824;
+    border-bottom: 1px solid #181824;
+    // padding-top: 2px;
+    .users-list-header {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      padding: 5px 0px;
+      // background-color: rgb(216, 216, 216);
+      background-color: #181824;
+      color: #e7104b;
+      -webkit-box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.42);
+      box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.42);
+      margin-bottom: 2px;
+    }
+    .user {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 5px;
+      width: 100%;
+      // background-color: red;
+      padding: 3px 0px;
+      span {
+        font-size: 18px;
+      }
+    }
+    .user:hover {
+      background-color: #181824;
+      color: #e7104b;
+      cursor: pointer;
+    }
+  }
+  .message-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    // border: 1px solid #181824;
+    background-color: yellow;
+    background-color: rgb(250, 250, 250);
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom: none;
+    height: 100%;
+    max-height: 100%;
+    .messages-holder {
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      width: 100%;
+      max-height: 227px;
+
+      // background-color: green;
+
+      .message {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 5px;
+        width: 100%;
+        // background-color: green;
+        // padding: 5px;
+        .name-holder {
+          .username {
+            font-size: 18px;
+            font-weight: 500;
+            color: #e7104b;
+            margin-right: 4px;
+            margin-left: 4px;
+          }
+          .time {
+            color: grey;
+            font-size: 14px;
+          }
+        }
+        .message-text {
+          span {
+            margin-left: 4px;
+          }
+        }
+      }
+    }
+  }
+
+  .users-icon-container {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    // background-color: yellow;
+    // border: 1px solid #181824;
+    border-bottom: none;
+    border-top: none;
+    padding-top: 3px;
+    padding-bottom: 6px;
+
+    .users-icon {
+      position: relative;
+      right: 5px;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .users-icon:hover {
+      color: #e7104b;
+    }
+  }
   .input-holder {
     width: 100%;
     // height: 30px;
-    background-color: Red;
+    // background-color: Red;
     justify-content: flex-end;
 
     form {
@@ -20,7 +161,7 @@
       width: 100%;
       // height: 100%;
       height: 40px;
-      background-color: green;
+      // background-color: green;
       padding: 0px;
       margin: 0px;
       overflow-y: hidden;
@@ -30,9 +171,10 @@
         height: 90%;
         padding: 0px;
         margin: 0px;
-        font-size: 20px;
+        font-size: 18px;
         padding-left: 3px;
         // border: none;
+        outline: none;
       }
     }
     button {
@@ -49,6 +191,9 @@
       border: 1px solid #181824;
       padding: 0px;
       margin: 0px;
+    }
+    button:hover {
+      cursor: pointer;
     }
   }
 }

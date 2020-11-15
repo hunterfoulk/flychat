@@ -1,4 +1,6 @@
 export const userReducer = (state, action) => {
+
+
     switch (action.type) {
         case 'UPDATE_USERNAME':
             return {
@@ -16,20 +18,12 @@ export const userReducer = (state, action) => {
                 userList: action.userList,
             };
         case 'UPDATE_MESSAGES':
-            const { username, userId, message, time } = action.data;
-            console.log("message array fired", action.data)
-            return {
-                ...state,
-                messages: [
-                    ...state.messages,
-                    {
-                        username,
-                        userId,
-                        message,
-                        time,
-                    },
-                ],
-            };
+            const username = action.username;
+            const message = action.message;
+            const time = action.time;
+            console.log("TIME", time)
+
+            return { ...state, messages: [...state.messages, { username, message, time, },], };
         default:
             return state;
     }
