@@ -21,27 +21,110 @@ export default function Room() {
     const location = useLocation();
     const match = useRouteMatch();
     const player = createRef()
-    const [isHost, setIsHost] = useState(true)
-    const [displayUserPrompt, setDisplayUserPrompt] = useState(false)
     const { dispatch: userDispatch, userData } = useContext(UserContext);
-    const { dispatch: videoDispatch } = useContext(UserContext);
-    const [peers, setPeers] = useState([]);
-    const userVideo = useRef()
+    const { dispatch: videoDispatch, videoData } = useContext(VideoContext);
     const socketRef = useRef();
-    const peersRef = useRef([]);
-    const peersCallback = useState([]);
     var moment = require("moment");
     const [loading, setLoading] = useState(true)
-    const videoConstraints = {
-        height: window.innerHeight / 2,
-        width: window.innerWidth / 2
-    };
 
 
     const options = {
         width: '100%',
         height: '520px',
     };
+
+
+    const getCurrentPlayer = () => {
+        if (player.current) return player.current.getInternalPlayer();
+        else return null;
+
+    };
+
+    const emitVideoState = (type, payload) => {
+
+        setTimeout(() => {
+            if (!videoData.transition) {
+                socketRef.current.emit('videoStateChange', { type, payload, username: userData.username });
+            }
+        }, 100);
+    }
+
+    const onVideoPlay = () => {
+        const player = getCurrentPlayer();
+
+        console.log("on video player", player)
+        player.seekTo(videoData.playVideo || 0);
+        player.playVideo();
+    }
+
+    const onPauseVideo = () => {
+        const player = getCurrentPlayer();
+
+        player.pauseVideo()
+    }
+
+    useEffect(() => {
+        onVideoPlay()
+    }, [videoData.playVideo])
+
+    useEffect(() => {
+        onPauseVideo()
+    }, [videoData.pauseVideo])
+
+
+
+
+    const onStateChange = (e) => {
+        const { data } = e;
+
+        let player = getCurrentPlayer()
+        console.log("player data", e)
+        switch (data) {
+            case -1:
+                console.log('Case -1 Video unstarted');
+                break;
+
+            case 0:
+                console.log('Case 0 Video Ended');
+                break;
+
+            case 1:
+                // PLAY
+                console.log('Case 1 Video Play', e.target.getCurrentTime());
+                videoDispatch({ type: 'UPDATE_TRANSITION', transition: false });
+                player.playVideo();
+
+                emitVideoState(
+                    'PLAY', { currentTime: e.target.getCurrentTime() },
+
+                );
+
+                break;
+
+            case 2:
+                // PAUSE
+                console.log('Case 2 Video paused');
+                emitVideoState('PAUSE');
+                videoDispatch({ type: 'UPDATE_TRANSITION', transition: false });
+
+                break;
+
+            case 3:
+                console.log('Case 3 Bufferring');
+                break;
+
+            case 5:
+                console.log('Case 5 Video qued');
+
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    console.log("current player", player.current)
+
 
 
     useEffect(() => {
@@ -59,6 +142,9 @@ export default function Room() {
     }, []);
 
     console.log("loading", loading)
+
+
+
 
     const init = async (roomID, videoId, username) => {
 
@@ -126,6 +212,43 @@ export default function Room() {
 
                     userDispatch({ type: 'UPDATE_USER_LIST', data });
                     break;
+
+                case "updateVideoState":
+                    console.log("video state change fired", data)
+                    videoDispatch({
+                        type: "UPDATE_TRANSITION",
+                        transition: true
+                    })
+
+                    switch (data.payload.type) {
+                        case "PLAY":
+
+                            videoDispatch({
+                                type: 'PLAY_VIDEO',
+                                currentTime: data.payload.currentTime,
+                            });
+
+                            break;
+
+                        case "PAUSE":
+                            videoDispatch({
+                                type: "PAUSE_VIDEO",
+                                timestamp: Date.now()
+                            })
+
+                            toast.warn(`${data.payload.user} paused the video.`, {
+                                position: "bottom-right",
+                                autoClose: 5000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: true,
+                                draggable: true,
+                                progress: undefined,
+                            });
+
+                            break;
+                    }
+                    break;
                 default:
                     break;
             }
@@ -146,19 +269,6 @@ export default function Room() {
 
     }
 
-    // const userJoinedMessage = (username, message, time) => {
-    //     userDispatch({
-    //         type: 'UPDATE_MESSAGES',
-    //         data: {
-    //             username,
-    //             message,
-    //             time
-
-    //         },
-    //     });
-
-    // }
-
 
     return (
         <div className="room-main">
@@ -169,6 +279,7 @@ export default function Room() {
                         videoId={userData.videoId}
                         opts={options}
                         ref={player}
+                        onStateChange={onStateChange}
                     />
                 </div >
                 {loading ? <span>loading...</span> : <Chat socket={socketRef.current} />}

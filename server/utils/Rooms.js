@@ -55,16 +55,6 @@ class Rooms {
 
     }
 
-    // removeUser(roomID) {
-    //     console.log("FIREDDD")
-
-    //     const room = this.rooms[roomID]
-
-    //     if (room) {
-    //         return room.users.filter(user => user.userId !== userId)
-    //     }
-
-    // }
 
 
 }

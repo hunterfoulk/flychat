@@ -10,7 +10,7 @@ const generateServerMessage = (type, payload = {}) => {
 
 class UserClass {
 
-    constructor(userId, username, roomID, peer) {
+    constructor(userId, username, roomID) {
         this.userId = userId
         this.username = username
         this.roomID = roomID
@@ -154,6 +154,25 @@ exports.setupIO = (io) => {
             io.to(payload.tab.foreignSocket.userId).emit("send tabs", { tabs: foreignUserTabs, tab: currentTab })
 
         })
+
+        socket.on('videoStateChange', (data) => {
+            let users = Rooms.getUserList(User.roomID)
+
+            console.log("users", users)
+            console.log("VIDEO STATE DATA", data)
+            let newUsers = users.filter(user => user.userId !== User.userId)
+            console.log("NEW USERS", newUsers)
+            newUsers.forEach((user) => {
+                // io.to(user.userId).emit("updateVideoState", { type: data.type, payload: data.payload })
+                io.to(user.userId).emit("newMessage", generateServerMessage("updateVideoState", {
+                    type: data.type, payload: data.payload, user: data.username
+                })
+                )
+            })
+
+        })
+
+
 
         socket.on('disconnect', async () => {
 

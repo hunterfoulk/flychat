@@ -16,10 +16,8 @@ export default function Chat({ socket }) {
     const [messages, setMessages] = useState([])
     var moment = require("moment");
     const messagesRef = useRef()
-    let time = moment().format("LT");
     const [typers, setTypers] = useState([])
     const { dispatch: userDispatch, userData } = useContext(UserContext);
-    const [typerState, setTyperState] = useState("")
     const [windows, setNewWindow] = useState([])
     const [tabs, setTabs] = useState([])
     const [tab, setTab] = useState("ROOM")
@@ -46,12 +44,6 @@ export default function Chat({ socket }) {
 
     }, [])
 
-    // useEffect(() => {
-    //     console.log('fired')
-
-    //     setTab(tab)
-
-    // }, [tabs])
 
     console.log("USERS TABS", tabs)
     socket.on("typing", (username) => {
@@ -119,6 +111,7 @@ export default function Chat({ socket }) {
     const tabStyles = {
         fontWeight: "500",
         backgroundColor: "white",
+        boxShadow: "2px 0px 17px -4px rgba(0, 0, 0, 0.6)",
         borderRight: "1px solid #18182486",
         borderLeft: "1px solid #18182486",
         borderTop: "1px solid #18182486",
