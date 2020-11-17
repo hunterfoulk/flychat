@@ -40,13 +40,13 @@ export default function Room() {
 
     };
 
-    const emitVideoState = (type, payload) => {
-
+    const emitVideoState = (type, payload, delayTime = 0) => {
+        console.log("emit fired", type)
         setTimeout(() => {
             if (!videoData.transition) {
                 socketRef.current.emit('videoStateChange', { type, payload, username: userData.username });
             }
-        }, 100);
+        }, 500 + delayTime);
     }
 
     const onVideoPlay = () => {
@@ -59,7 +59,7 @@ export default function Room() {
 
     const onPauseVideo = () => {
         const player = getCurrentPlayer();
-
+        videoDispatch({ type: 'UPDATE_TRANSITION', transition: false });
         player.pauseVideo()
     }
 
@@ -91,13 +91,13 @@ export default function Room() {
             case 1:
                 // PLAY
                 console.log('Case 1 Video Play', e.target.getCurrentTime());
-                videoDispatch({ type: 'UPDATE_TRANSITION', transition: false });
                 player.playVideo();
 
                 emitVideoState(
-                    'PLAY', { currentTime: e.target.getCurrentTime() },
+                    'PLAY', { currentTime: e.target.getCurrentTime() }, 150
 
                 );
+                videoDispatch({ type: 'UPDATE_TRANSITION', transition: false });
 
                 break;
 
@@ -175,7 +175,7 @@ export default function Room() {
 
         socketRef.current.on('newMessage', (data) => {
 
-            console.log("DATA FOR SWITCH", data)
+            console.log("DATA FOR SWITCH", data.payload)
 
 
             switch (data.type) {
@@ -222,10 +222,11 @@ export default function Room() {
 
                     switch (data.payload.type) {
                         case "PLAY":
-
+                            console.log("PLAY FIREDDDD", data.payload)
+                            console.log("PLAY FIREDDDD 123", data.payload.currentTime)
                             videoDispatch({
                                 type: 'PLAY_VIDEO',
-                                currentTime: data.payload.currentTime,
+                                currentTime: data.payload.currentTime
                             });
 
                             break;

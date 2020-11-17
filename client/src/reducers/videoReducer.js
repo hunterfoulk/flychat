@@ -1,4 +1,5 @@
 export const videoReducer = (state, action) => {
+    console.log("reducer action", action)
     switch (action.type) {
         case 'UPDATE_TRANSITION':
             return {
@@ -8,7 +9,7 @@ export const videoReducer = (state, action) => {
         case 'PLAY_VIDEO':
             return {
                 ...state,
-                playVideo: Math.round(action.currentTime),
+                playVideo: action.currentTime,
             };
         case 'PAUSE_VIDEO':
             return {

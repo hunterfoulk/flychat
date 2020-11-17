@@ -158,14 +158,14 @@ exports.setupIO = (io) => {
         socket.on('videoStateChange', (data) => {
             let users = Rooms.getUserList(User.roomID)
 
-            console.log("users", users)
+
             console.log("VIDEO STATE DATA", data)
-            let newUsers = users.filter(user => user.userId !== User.userId)
-            console.log("NEW USERS", newUsers)
-            newUsers.forEach((user) => {
+
+
+            users.forEach((user) => {
                 // io.to(user.userId).emit("updateVideoState", { type: data.type, payload: data.payload })
                 io.to(user.userId).emit("newMessage", generateServerMessage("updateVideoState", {
-                    type: data.type, payload: data.payload, user: data.username
+                    type: data.type, ...data.payload, user: data.username
                 })
                 )
             })
