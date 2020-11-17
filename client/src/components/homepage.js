@@ -42,7 +42,7 @@ export default function Homepage() {
                 <div className="header-left">
                     <div className="left-content">
                         <h2 className="header-one">A <span className="second-h2">Youtube</span> Watch Party Chat Room For Friends</h2>
-                        <p className="header-two">Host or join a chat room to watch videos and webcam with your friends.</p>
+                        <p className="header-two">Host or join a chat room to watch videos with your friends.</p>
                     </div>
                     <div className="button-container">
                         <button>Get Started</button>

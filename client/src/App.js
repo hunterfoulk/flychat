@@ -3,6 +3,7 @@ import Routes from "./Routes"
 import { UserContextProvider } from "./contexts/userContext";
 import { VideoContextProvider } from './contexts/videoContext';
 import Navbar from "./common/navbar"
+import Footer from "./common/footer"
 
 export default function App() {
 
@@ -12,6 +13,7 @@ export default function App() {
       <VideoContextProvider>
         <Navbar />
         <Routes />
+        <Footer />
       </VideoContextProvider>
     </UserContextProvider>
 

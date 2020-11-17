@@ -160,8 +160,15 @@ exports.setupIO = (io) => {
 
 
             console.log("VIDEO STATE DATA", data)
+            let newUsers = users.filter(user => user.userId !== User.userId)
+            if (data.type === "PAUSE") {
+                newUsers.forEach((user) => {
+                    // io.to(user.userId).emit("updateVideoState", { type: data.type, payload: data.payload })
+                    io.to(user.userId).emit("sendPauseEvent", { user: User.username })
 
 
+                })
+            }
             users.forEach((user) => {
                 // io.to(user.userId).emit("updateVideoState", { type: data.type, payload: data.payload })
                 io.to(user.userId).emit("newMessage", generateServerMessage("updateVideoState", {
@@ -184,7 +191,10 @@ exports.setupIO = (io) => {
             let users = Rooms.getUserList(User.roomID)
 
             console.log("new users", users)
-
+            if (users.length === 0) {
+                console.log("no users left")
+                Rooms.removeRoom(User.roomID)
+            }
 
             // console.log("NEW USERS", newUsers)
             users.forEach((user) => {
@@ -192,7 +202,6 @@ exports.setupIO = (io) => {
                 io.to(user.userId).emit('userLeft', User.username)
 
                 io.to(user.userId).emit('updateUserList', users)
-
 
             })
 

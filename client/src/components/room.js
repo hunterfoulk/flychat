@@ -34,6 +34,22 @@ export default function Room() {
     };
 
 
+    // socketRef.current.on('sendPauseEvent', (data) => {
+    //     console.log(data)
+
+
+    //     toast.warn(`${data.user} paused the video.`, {
+    //         position: "bottom-right",
+    //         autoClose: 5000,
+    //         hideProgressBar: false,
+    //         closeOnClick: true,
+    //         pauseOnHover: true,
+    //         draggable: true,
+    //         progress: undefined,
+    //     });
+
+    // })
+
     const getCurrentPlayer = () => {
         if (player.current) return player.current.getInternalPlayer();
         else return null;
@@ -136,6 +152,24 @@ export default function Room() {
             setLoading(false)
         }, 300);
 
+
+        socketRef.current.on('sendPauseEvent', (data) => {
+            console.log(data)
+
+
+            toast.warn(`${data.user} paused the video.`, {
+                position: "bottom-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+            });
+
+        })
+
+
         return () => {
             socketRef.current.disconnect()
         }
@@ -237,15 +271,6 @@ export default function Room() {
                                 timestamp: Date.now()
                             })
 
-                            toast.warn(`${data.payload.user} paused the video.`, {
-                                position: "bottom-right",
-                                autoClose: 5000,
-                                hideProgressBar: false,
-                                closeOnClick: true,
-                                pauseOnHover: true,
-                                draggable: true,
-                                progress: undefined,
-                            });
 
                             break;
                     }

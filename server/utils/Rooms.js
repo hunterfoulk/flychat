@@ -1,4 +1,4 @@
-// const { uniqBy, remove, isEmpty, uniq } = require('lodash')
+const { uniqBy, remove, isEmpty, uniq } = require('lodash')
 
 class Rooms {
 
@@ -41,6 +41,13 @@ class Rooms {
 
     getRoom(roomId) {
         return this.rooms[roomId]
+
+    }
+
+    removeRoom(roomID) {
+
+        this.rooms = remove(this.rooms, r => r.roomID !== roomID)
+        console.log("new rooms", this.rooms)
 
     }
 
