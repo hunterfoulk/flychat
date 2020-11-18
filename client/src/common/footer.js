@@ -27,7 +27,7 @@ export default function Footer() {
 
             </div>
             <div className="footer-bottom">
-                <span>FlyChat</span>
+                <span className="footer-title">FlyChat</span>
                 <span>© 2020 Hunter Foulk | All rights reserved.</span>
             </div>
         </div>

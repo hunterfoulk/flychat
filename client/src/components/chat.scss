@@ -198,3 +198,13 @@
     }
   }
 }
+
+@media (max-width: 600px) {
+  .chat {
+    .tabs {
+      .general-tab {
+        width: 15%;
+      }
+    }
+  }
+}

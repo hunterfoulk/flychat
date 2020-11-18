@@ -11,9 +11,9 @@ export default function App() {
   return (
     <UserContextProvider>
       <VideoContextProvider>
-        <Navbar />
+
         <Routes />
-        <Footer />
+
       </VideoContextProvider>
     </UserContextProvider>
 
