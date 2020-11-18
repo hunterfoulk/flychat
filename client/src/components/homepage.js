@@ -14,6 +14,7 @@ export default function Homepage() {
     const [hostName, setHostName] = useState("")
     const [username, setUsername] = useState("")
     const [videoUrl, setVideoUrl] = useState("")
+    const [joinUrl, setJoinUrl] = useState("")
     const [_socket, setSocket] = useState(null)
     const history = useHistory()
 
@@ -27,12 +28,23 @@ export default function Homepage() {
             pathname: `/room/${roomID}`,
             state: { hostName: username, videoId, roomID },
 
-
         });
 
         setVideoUrl("")
         setHostName("")
         console.log("VIDEO ID", videoId)
+    }
+
+    const joinRoom = async (e) => {
+        e.preventDefault()
+        const splitUrl = joinUrl.split("/")
+        const roomID = splitUrl[splitUrl.length - 1];
+        console.log("this is the roomID", roomID)
+
+        history.push({
+            pathname: `/room/${roomID}`,
+            state: { hostName: username },
+        });
     }
 
 
@@ -45,7 +57,7 @@ export default function Homepage() {
                         <p className="header-two">Host or join a chat room to watch videos with your friends.</p>
                     </div>
                     <div className="button-container">
-                        <button>Get Started</button>
+                        <button onClick={() => { window.scrollTo(750, 750) }}>Get Started</button>
                     </div>
                 </div>
                 <div className="header-right">
@@ -85,8 +97,8 @@ export default function Homepage() {
                     <div className="form">
                         <h2>Join Room</h2>
                         <input placeholder="username" value={username} onChange={(e) => setUsername(e.target.value)} />
-                        <input placeholder="url" value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} />
-                        <button type="submit">Join</button>
+                        <input placeholder="url" value={joinUrl} onChange={(e) => setJoinUrl(e.target.value)} />
+                        <button onClick={(e) => joinRoom(e)}>Join</button>
                     </div>
                 </div>
             </div>

@@ -34,22 +34,6 @@ export default function Room() {
     };
 
 
-    // socketRef.current.on('sendPauseEvent', (data) => {
-    //     console.log(data)
-
-
-    //     toast.warn(`${data.user} paused the video.`, {
-    //         position: "bottom-right",
-    //         autoClose: 5000,
-    //         hideProgressBar: false,
-    //         closeOnClick: true,
-    //         pauseOnHover: true,
-    //         draggable: true,
-    //         progress: undefined,
-    //     });
-
-    // })
-
     const getCurrentPlayer = () => {
         if (player.current) return player.current.getInternalPlayer();
         else return null;
@@ -185,6 +169,8 @@ export default function Room() {
         socketRef.current = io("http://localhost:8000", { path: '/socket' });
 
         if (!videoId) {
+            console.log("no video ID")
+
 
             if (!username) {
 
@@ -197,8 +183,8 @@ export default function Room() {
                 userDispatch({ type: 'UPDATE_USERNAME', username: username });
 
 
-                socketRef.current.emit("join room", { roomID, username, videoId });
             }
+            socketRef.current.emit("join room", { roomID, username, videoId });
         } else {
             socketRef.current.emit("join room", { roomID, username, videoId });
             userDispatch({ type: 'UPDATE_VIDEO_ID', videoId: videoId });
