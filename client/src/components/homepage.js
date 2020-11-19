@@ -15,7 +15,6 @@ export default function Homepage() {
     const [username, setUsername] = useState("")
     const [videoUrl, setVideoUrl] = useState("")
     const [joinUrl, setJoinUrl] = useState("")
-    const [_socket, setSocket] = useState(null)
     const history = useHistory()
 
     const createRoom = async (e) => {

@@ -166,7 +166,7 @@ export default function Room() {
 
     const init = async (roomID, videoId, username) => {
 
-        socketRef.current = io("http://localhost:8000", { path: '/socket' });
+        socketRef.current = io("https://flychatserver.herokuapp.com/", { path: '/socket' });
 
         if (!videoId) {
             console.log("no video ID")
