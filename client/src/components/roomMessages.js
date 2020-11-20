@@ -18,13 +18,13 @@ export default function RoomMessages({ messages, messagesRef }) {
                             <span>{message.message}</span>
                         </div>
 
-                        <div ref={messagesRef} />
+
 
                     </div>
 
                 </>
             ))}
-
+            <div ref={messagesRef} />
         </>
     )
 }

@@ -42,6 +42,11 @@ export default function Chat({ socket }) {
             setTypers((typers) => typers.filter((typer) => typer !== username));
         });
 
+
+        socket.on("updateTabList", (username) => {
+            setTabs((tabs) => tabs.filter((tab) => tab.username !== username));
+        });
+
     }, [])
 
 
@@ -59,11 +64,15 @@ export default function Chat({ socket }) {
         e.preventDefault()
         if (tab === "ROOM") {
             socket.emit("createMessage", message)
+            socket.emit("notTyping", {
+                username: userData.username,
+            });
             setMessage("")
         } else {
 
             console.log("THIS IS THE TAB", tab)
             socket.emit("newTabMessage", { tab, message })
+
             setMessage("")
         }
 
@@ -96,15 +105,6 @@ export default function Chat({ socket }) {
 
     }
 
-    // const sendPrivateMessage = (e) => {
-    //     e.preventDefault()
-    //     console.log("PM FIRED")
-    //     let userId = tab.userId
-
-    //     socket.emit("createPrivateMessage", { userId, message })
-
-    //     setPrivateMessage("")
-    // }
 
     console.log("NEW WINDOW", windows)
 
@@ -136,7 +136,7 @@ export default function Chat({ socket }) {
                             backgroundColor: "#f3f3f3", border: "none", borderTopLeftRadius: "3px",
                             borderTopRightRadius: "3px",
                         }}>
-                            <span>{tabs.foreignSocket.username}</span>
+                            <span>{tabs.foreignSocket.username === userData.username ? tabs.localSocket.username : tabs.foreignSocket.username}</span>
                         </div>
                     ))}
                 </div>

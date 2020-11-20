@@ -57,7 +57,7 @@ class Rooms {
         // console.log("filtered room id", roomID)
         let userFiltered = this.rooms[roomID].users.filter(user => user.userId !== User.userId);
         this.rooms[roomID].users = userFiltered
-        console.log("FILTERED USERS IN CLASS", userFiltered)
+        // console.log("FILTERED USERS IN CLASS", userFiltered)
 
 
     }
@@ -79,9 +79,33 @@ class TabsClass {
     getTab(tabId) {
         return this.tabs.find(t => t.tabId === tabId)
     }
+
     getUsersTabs(user) {
-        const usersTabs = this.tabs.filter(t => t.localSocket.userId !== user.userId)
+        console.log("GET USERS TABS", user)
+        const usersTabs = this.tabs.filter(t => t.localSocket.userId === user)
+        console.log("USERS TABS", usersTabs)
         return usersTabs
+    }
+
+    getUsersTabsForeign(user) {
+        console.log("GET USERS TABS", user)
+        const usersTabs = this.tabs.filter(t => t.foreignSocket.userId === user)
+        console.log("USERS TABS", usersTabs)
+        return usersTabs
+    }
+
+    removeTabs(userId) {
+        // console.log("find tab fired", this.tabs)
+        console.log("this the the user id for tab", userId)
+        let tabs = this.tabs.filter(i => i.localSocket.userId !== userId)
+        console.log("tabs", tabs)
+        this.tabs = tabs
+
+    }
+
+    findTab(tabId) {
+
+
     }
 }
 
@@ -97,6 +121,7 @@ class TabClass {
         console.log("message sent", message)
         this.messages.push(message)
     }
+
 
 }
 

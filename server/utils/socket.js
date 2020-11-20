@@ -93,20 +93,6 @@ exports.setupIO = (io) => {
         })
 
 
-        socket.on("createPrivateMessage", ({ userId, message }) => {
-            console.log("new message data", message)
-            console.log("USER that sent pm", User)
-            console.log("USERS id ", userId)
-
-
-
-            // io.to(user.userId).emit("emitPrivateMessage", { User, message })
-
-
-        })
-
-
-
 
         socket.on("typing", (payload) => {
             let username = payload.username
@@ -131,10 +117,10 @@ exports.setupIO = (io) => {
 
         socket.on("createNewTab", (payload) => {
             const tabId = short.generate()
-            console.log("payload", payload)
+            // console.log("payload", payload)
             Tabs.addTab({ tabId: tabId, local: User, foreign: payload })
 
-            console.log(Tabs.getAllTabs())
+            // console.log(Tabs.getAllTabs())
             tabs = Tabs.getUsersTabs(User.userId)
             console.log("TABS", tabs)
 
@@ -142,13 +128,13 @@ exports.setupIO = (io) => {
         })
 
         socket.on("newTabMessage", (payload) => {
-            console.log("MESSAGE", payload.message)
+            console.log("PAYLOAD", payload.tab.localSocket.userId)
             const currentTab = Tabs.getTab(payload.tab.tabId)
 
             currentTab.setMessages({ user: User, message: payload.message })
 
             const localUserTabs = Tabs.getUsersTabs(payload.tab.localSocket.userId)
-            const foreignUserTabs = Tabs.getUsersTabs(payload.tab.foreignSocket.userId)
+            const foreignUserTabs = Tabs.getUsersTabsForeign(payload.tab.foreignSocket.userId)
             console.log("tabsss", foreignUserTabs)
             io.to(payload.tab.localSocket.userId).emit("send tabs", { tabs: localUserTabs, tab: currentTab })
             io.to(payload.tab.foreignSocket.userId).emit("send tabs", { tabs: foreignUserTabs, tab: currentTab })
@@ -185,23 +171,28 @@ exports.setupIO = (io) => {
 
             if (User === undefined) return
 
-            console.log("disconnect fired", User)
+            // console.log("disconnect fired", User)
             Rooms.removeUser(User)
 
             let users = Rooms.getUserList(User.roomID)
 
-            console.log("new users", users)
+            // console.log("new users", users)
             if (users.length === 0) {
                 console.log("no users left")
                 Rooms.removeRoom(User.roomID)
             }
 
-            // console.log("NEW USERS", newUsers)
+            Tabs.removeTabs(User.userId)
+
+            // io.to(user.userId).emit('updateTabList', User.username)
+
+
             users.forEach((user) => {
-                console.log("FOR EACH USER", user)
+                // console.log("FOR EACH USER", user)
                 io.to(user.userId).emit('userLeft', User.username)
 
                 io.to(user.userId).emit('updateUserList', users)
+
 
             })
 

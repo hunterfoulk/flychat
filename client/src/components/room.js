@@ -12,6 +12,9 @@ import styled from "styled-components";
 import io from 'socket.io-client';
 import { ToastContainer, toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
+import { AiOutlineLoading3Quarters } from 'react-icons/ai';
+
+
 
 
 
@@ -165,8 +168,8 @@ export default function Room() {
 
 
     const init = async (roomID, videoId, username) => {
-
-        socketRef.current = io("https://flychatserver.herokuapp.com/", { path: '/socket' });
+        // https://flychatserver.herokuapp.com/
+        socketRef.current = io("http://localhost:8000", { path: '/socket' });
 
         if (!videoId) {
             console.log("no video ID")
@@ -275,6 +278,7 @@ export default function Room() {
 
         socketRef.current.on("updateUserList", users => {
             console.log("update fired", users)
+
             userDispatch({ type: 'UPDATE_USER_LIST', userList: users });
 
         });
@@ -294,7 +298,7 @@ export default function Room() {
                         onStateChange={onStateChange}
                     />
                 </div >
-                {loading ? <span>loading...</span> : <Chat socket={socketRef.current} />}
+                {loading ? <AiOutlineLoading3Quarters /> : <Chat socket={socketRef.current} />}
 
             </div>
 
